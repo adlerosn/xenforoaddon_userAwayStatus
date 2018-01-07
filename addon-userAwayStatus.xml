@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="userAwayStatus" title="[kiror] User Away Status" version_string="0.0" version_id="0" url="https://github.com/adlerosn/" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="option_user_away_status"><![CDATA[<xen:require css="public:user_banners.css" />
+
+<xen:controlunit label="{$preparedOption.title}" hint="{$preparedOption.hint}">
+	<xen:explain>{xen:raw $preparedOption.explain}</xen:explain>
+	<xen:html>
+		<xen:radio name="{$fieldPrefix}[{$preparedOption.option_id}][radio]" value="{$userGroup.banner_css_class}" listclass="checkboxColumns">
+			<xen:foreach loop="$displayStyles" value="$class">
+				<xen:option value="{$class.class}" selected="{$class.selected}"><span title="{$class.class}" class="Tooltip {$class.class}" style="display: inline">{$bannerText}</span></xen:option>
+			</xen:foreach>
+			<xen:option selected="{$displayStylesOther}" label="{xen:phrase other_using_custom_css_class_name}:">
+				<xen:textbox name="{$fieldPrefix}[{$preparedOption.option_id}][text]" value="{xen:if $displayStylesOther, {$current}, ''}" inputclass="autoSize" maxlength="75" />
+			</xen:option>
+		</xen:radio>
+	<input type="hidden" name="{$listedFieldName}" value="{$preparedOption.option_id}" />
+	{xen:raw $editLink}
+	</xen:html>
+</xen:controlunit>]]></template>
+  </admin_templates>
+  <admin_template_modifications/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="init_dependencies" execute_order="10" callback_class="userAwayStatus_EventListener_InitDependencies" callback_method="listen" active="1" hint="" description="Overload avatar to add &quot;smoke&quot; when inactive"/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="userAwayStatus_Extend" callback_method="callback" active="1" hint="XenForo_ControllerPublic_Forum" description="Adds members not away counter to response"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups>
+    <option option_id="userAwayFromSiteBannerClass" edit_format="callback" data_type="array" can_backup="1" validation_class="userAwayStatus_adminOption1" validation_method="verifier_AdminCP_CustomLinksAdder">
+      <default_value>a:1:{s:5:"class";s:23:"userBanner bannerHidden";}</default_value>
+      <edit_format_params>userAwayStatus_adminOption1::render_AdminCP_CustomLinksAdder</edit_format_params>
+      <sub_options>*</sub_options>
+      <relation group_id="users" display_order="1190"/>
+    </option>
+    <option option_id="userAwayFromSiteBannerText" edit_format="textbox" data_type="string" can_backup="1">
+      <default_value>Away</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="users" display_order="1180"/>
+    </option>
+    <option option_id="userAwayFromSiteBlacklist" edit_format="textbox" data_type="string" can_backup="1" validation_class="userAwayStatus_adminOption2" validation_method="verifier_AdminCP_CustomLinksAdder">
+      <default_value></default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="users" display_order="1120"/>
+    </option>
+    <option option_id="userAwayFromSiteBlurb" edit_format="textbox" data_type="string" can_backup="1">
+      <default_value>Away</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="users" display_order="1170"/>
+    </option>
+    <option option_id="userAwayFromSiteCssRule" edit_format="textbox" data_type="string" can_backup="1">
+      <default_value>opacity: 0.4;</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="users" display_order="1160"/>
+    </option>
+    <option option_id="userAwayFromSiteTimeDayLimit" edit_format="spinbox" data_type="integer" can_backup="1">
+      <default_value>28</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="users" display_order="1150"/>
+    </option>
+    <option option_id="userAwayFromSiteTimesStatistics" edit_format="textbox" data_type="string" can_backup="1" validation_class="userAwayStatus_adminOption2" validation_method="verifier_AdminCP_CustomLinksAdder">
+      <default_value>28</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="users" display_order="1140"/>
+    </option>
+    <option option_id="userAwayFromSiteWhitelist" edit_format="textbox" data_type="string" can_backup="1" validation_class="userAwayStatus_adminOption2" validation_method="verifier_AdminCP_CustomLinksAdder">
+      <default_value></default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="users" display_order="1130"/>
+    </option>
+  </optiongroups>
+  <permissions>
+    <permission_groups/>
+    <permissions>
+      <permission permission_group_id="general" permission_id="seeMemberAwayStatistic" permission_type="flag" default_value="unset" interface_group_id="generalPermissions" display_order="47"/>
+    </permissions>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="members_count_not_away" version_id="0" version_string="0.0"><![CDATA[Members not away]]></phrase>
+    <phrase title="option_userAwayFromSiteBannerClass" version_id="0" version_string="0.0"><![CDATA[User away from site banner class]]></phrase>
+    <phrase title="option_userAwayFromSiteBannerClass_explain" version_id="0" version_string="0.0"><![CDATA[]]></phrase>
+    <phrase title="option_userAwayFromSiteBannerText" version_id="0" version_string="0.0"><![CDATA[User away from site banner text]]></phrase>
+    <phrase title="option_userAwayFromSiteBannerText_explain" version_id="0" version_string="0.0"><![CDATA[The text of the banner the user will receive if considered away.]]></phrase>
+    <phrase title="option_userAwayFromSiteBlacklist" version_id="0" version_string="0.0"><![CDATA[Users away from site blacklisted]]></phrase>
+    <phrase title="option_userAwayFromSiteBlacklist_explain" version_id="0" version_string="0.0"><![CDATA[Comma-separated values: The IDs of the users that will be always away from the site.]]></phrase>
+    <phrase title="option_userAwayFromSiteBlurb" version_id="0" version_string="0.0"><![CDATA[User away from site blurb title]]></phrase>
+    <phrase title="option_userAwayFromSiteBlurb_explain" version_id="0" version_string="0.0"><![CDATA[The text in user blurb the user will receive if considered away.]]></phrase>
+    <phrase title="option_userAwayFromSiteCssRule" version_id="0" version_string="0.0"><![CDATA[User away from site css rule]]></phrase>
+    <phrase title="option_userAwayFromSiteCssRule_explain" version_id="0" version_string="0.0"><![CDATA[The CSS the user avatar will receive if considered away.]]></phrase>
+    <phrase title="option_userAwayFromSiteTimeDayLimit" version_id="0" version_string="0.0"><![CDATA[User away from site time limit]]></phrase>
+    <phrase title="option_userAwayFromSiteTimeDayLimit_explain" version_id="0" version_string="0.0"><![CDATA[The number of consecutive days until the user is considered away.]]></phrase>
+    <phrase title="option_userAwayFromSiteTimesStatistics" version_id="0" version_string="0.0"><![CDATA[Days for active member count statistics]]></phrase>
+    <phrase title="option_userAwayFromSiteTimesStatistics_explain" version_id="0" version_string="0.0"><![CDATA[Comma-separated values: The days that will be shown in statistics]]></phrase>
+    <phrase title="option_userAwayFromSiteWhitelist" version_id="0" version_string="0.0"><![CDATA[Users away from site whitelisted]]></phrase>
+    <phrase title="option_userAwayFromSiteWhitelist_explain" version_id="0" version_string="0.0"><![CDATA[Comma-separated values: The IDs of the users that will be always ignored, never being displayed as away.]]></phrase>
+    <phrase title="permission_general_seeMemberAwayStatistic" version_id="0" version_string="0.0"><![CDATA[See members away statistic]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates>
+    <template title="forum_list_stats_extra_statistics_away" version_id="0" version_string="0.0"><![CDATA[<xen:if is="{$visitor.permissions.general.seeMemberAwayStatistic}">
+<xen:foreach loop="$boardTotals.usersNotAway" value="$awayStat">
+	<dl class="memberCount"><dt>
+		{xen:phrase members_count_not_away} ({xen:number $awayStat.days} {xen:phrase days}):
+	</dt>
+	<dd>
+		{xen:number $awayStat.count}
+	</dd></dl>
+</xen:foreach>
+</xen:if>]]></template>
+    <template title="userAwayFromSite.css" version_id="0" version_string="0.0"><![CDATA[.userAwayFromSite img:not(:hover),
+.userAwayFromSite .img:not(:hover)
+{
+	{xen:raw $xenOptions.userAwayFromSiteCssRule}
+}
+
+.userAwayFromSite img,
+.userAwayFromSite .img
+{
+	transition: all {xen:calc '{xen:property overlaySpeed} * {xen:property animationSpeedMultiplier}'}ms;
+}
+]]></template>
+  </templates>
+  <public_template_modifications>
+    <modification template="xenforo.css" modification_key="AddUserAwayClass" description="Add user away class" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:hook name="xenforo_css_extra" />]]></find>
+      <replace><![CDATA[<xen:include template="userAwayFromSite.css" />
+$0]]></replace>
+    </modification>
+    <modification template="forum_list" modification_key="addmembernotawaytoforumlist" description="Adds Members-not-away counter in forum list" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<!-- slot: forum_stats_extra -->]]></find>
+      <replace><![CDATA[$0
+<xen:include template="forum_list_stats_extra_statistics_away" />]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
